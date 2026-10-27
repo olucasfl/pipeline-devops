@@ -1,0 +1,28 @@
+name: Pipeline
+
+on:
+  push:
+    branches: [main, develop, "feature/**"]
+
+env:
+  PROJETO: pipeline-devops
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash script_build.sh
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash script_test.sh
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploy do $PROJETO realizado"
