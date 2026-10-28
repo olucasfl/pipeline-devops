@@ -3,35 +3,57 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Calculadora de IMC</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 360px; margin: 3rem auto; padding: 0 1rem; }
-    label { display: block; margin-top: .8rem; }
-    input, button { width: 100%; padding: .6rem; font-size: 1rem; box-sizing: border-box; }
-    button { margin-top: 1rem; cursor: pointer; }
-    #resultado { margin-top: 1rem; font-weight: bold; }
-  </style>
+  <title>Quadro Kanban</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Calculadora de IMC</h1>
-  <form id="form">
-    <label>Peso (kg) <input id="peso" type="number" step="0.1" required></label>
-    <label>Altura (m) <input id="altura" type="number" step="0.01" required></label>
-    <button type="submit">Calcular</button>
+  <header>
+    <h1>Quadro Kanban</h1>
+    <p id="progress-text" role="status"></p>
+    <progress id="progress" max="100" value="0"></progress>
+  </header>
+
+  <form id="form" class="toolbar">
+    <input id="title" type="text" placeholder="Nova tarefa" aria-label="Titulo da tarefa" maxlength="80">
+    <select id="priority" aria-label="Prioridade">
+      <option value="baixa">Baixa</option>
+      <option value="media" selected>Media</option>
+      <option value="alta">Alta</option>
+    </select>
+    <button type="submit">Adicionar</button>
   </form>
-  <p id="resultado" role="status"></p>
-  <script src="imc.js"></script>
-  <script>
-    document.getElementById("form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const out = document.getElementById("resultado");
-      try {
-        const imc = calcularImc(+peso.value, +altura.value);
-        out.textContent = `IMC ${imc} - ${classificarImc(imc)}`;
-      } catch (err) {
-        out.textContent = err.message;
-      }
-    });
-  </script>
+  <p id="error" class="error" role="alert"></p>
+
+  <div class="toolbar">
+    <input id="search" type="search" placeholder="Buscar" aria-label="Buscar tarefas">
+    <select id="filter-priority" aria-label="Filtrar por prioridade">
+      <option value="todas">Todas</option>
+      <option value="baixa">Baixa</option>
+      <option value="media">Media</option>
+      <option value="alta">Alta</option>
+    </select>
+    <button id="export" type="button">Exportar JSON</button>
+  </div>
+
+  <main class="board">
+    <section>
+      <h2>A fazer <span id="count-todo" class="count">0</span></h2>
+      <ul id="list-todo"></ul>
+    </section>
+    <section>
+      <h2>Fazendo <span id="count-doing" class="count">0</span></h2>
+      <ul id="list-doing"></ul>
+    </section>
+    <section>
+      <h2>Feito <span id="count-done" class="count">0</span></h2>
+      <ul id="list-done"></ul>
+    </section>
+  </main>
+
+  <footer>Versao <span id="version">__VERSION__</span></footer>
+
+  <script src="tasks.js"></script>
+  <script src="storage.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

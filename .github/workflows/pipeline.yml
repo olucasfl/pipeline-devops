@@ -8,7 +8,27 @@ env:
   PROJETO: pipeline-devops
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: bash script_lint.sh
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: bash script_test.sh
+
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,18 +41,8 @@ jobs:
           name: site
           path: dist/
 
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: bash script_test.sh
-
   deploy:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -40,5 +50,4 @@ jobs:
           name: site
           path: dist/
       - run: ls dist
-      - run: echo "Deploy do $PROJETO realizado"
-
+      - run: echo "Deploy do $PROJETO versao $(cat dist/version.txt) realizado"
