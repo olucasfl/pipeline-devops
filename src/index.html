@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora de IMC</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 360px; margin: 3rem auto; padding: 0 1rem; }
+    label { display: block; margin-top: .8rem; }
+    input, button { width: 100%; padding: .6rem; font-size: 1rem; box-sizing: border-box; }
+    button { margin-top: 1rem; cursor: pointer; }
+    #resultado { margin-top: 1rem; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Calculadora de IMC</h1>
+  <form id="form">
+    <label>Peso (kg) <input id="peso" type="number" step="0.1" required></label>
+    <label>Altura (m) <input id="altura" type="number" step="0.01" required></label>
+    <button type="submit">Calcular</button>
+  </form>
+  <p id="resultado" role="status"></p>
+  <script src="imc.js"></script>
+  <script>
+    document.getElementById("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const out = document.getElementById("resultado");
+      try {
+        const imc = calcularImc(+peso.value, +altura.value);
+        out.textContent = `IMC ${imc} - ${classificarImc(imc)}`;
+      } catch (err) {
+        out.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>
