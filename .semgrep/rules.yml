@@ -1,0 +1,12 @@
+rules:
+  - id: proibido-eval
+    languages: [javascript]
+    severity: ERROR
+    message: Nao use eval(): permite executar codigo arbitrario.
+    pattern: eval(...)
+
+  - id: proibido-innerhtml
+    languages: [javascript]
+    severity: ERROR
+    message: Nao atribua innerHTML: risco de XSS. Use textContent.
+    pattern: $EL.innerHTML = $X

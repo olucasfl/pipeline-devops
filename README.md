@@ -6,9 +6,17 @@ Quadro Kanban em HTML, CSS e JavaScript puro, com pipeline no GitHub Actions.
 
 ## Pipeline
 
-lint -> test -> build -> deploy
+lint -> test -> build -> sast -> dast -> deploy
 
 Se uma etapa falha, as seguintes nao rodam.
+
+- **SAST (Semgrep):** analisa o codigo-fonte em `src/`. Falha se achar vulnerabilidade
+  (regras `p/javascript` + `.semgrep/rules.yml`, que proibe `eval()` e `innerHTML =`).
+- **DAST (OWASP ZAP):** sobe o site do build e ataca a aplicacao rodando. Falha se faltar
+  algum cabecalho de seguranca definido em `.zap/rules.tsv` (CSP, nosniff, anti-clickjacking).
+- Os relatorios ficam como artefatos da execucao no GitHub Actions.
+- **DefectDojo (opcional):** se os secrets `DEFECTDOJO_URL` e `DEFECTDOJO_TOKEN` existirem,
+  os relatorios sao enviados para la. Sem eles, o envio e pulado.
 
 ## Rodar local
 

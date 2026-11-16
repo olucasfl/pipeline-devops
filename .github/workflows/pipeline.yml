@@ -41,8 +41,57 @@ jobs:
           name: site
           path: dist/
 
+  sast:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      DD_URL: ${{ secrets.DEFECTDOJO_URL }}
+      DD_TOKEN: ${{ secrets.DEFECTDOJO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install semgrep
+      - run: bash script_sast.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: relatorio-sast
+          path: reports/semgrep.json
+      - name: Enviar ao DefectDojo (opcional)
+        if: always() && env.DD_URL != ''
+        run: bash script_defectdojo.sh "Semgrep JSON Report" reports/semgrep.json
+
+  dast:
+    needs: [build, sast]
+    runs-on: ubuntu-latest
+    env:
+      DD_URL: ${{ secrets.DEFECTDOJO_URL }}
+      DD_TOKEN: ${{ secrets.DEFECTDOJO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: dist/
+      - run: bash script_dast.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: relatorio-dast
+          path: |
+            reports/zap-report.html
+            reports/zap-report.xml
+      - name: Enviar ao DefectDojo (opcional)
+        if: always() && env.DD_URL != ''
+        run: bash script_defectdojo.sh "ZAP Scan" reports/zap-report.xml
+
   deploy:
-    needs: build
+    needs: dast
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
