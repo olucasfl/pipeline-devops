@@ -44,9 +44,6 @@ jobs:
   sast:
     needs: test
     runs-on: ubuntu-latest
-    env:
-      DD_URL: ${{ secrets.DEFECTDOJO_URL }}
-      DD_TOKEN: ${{ secrets.DEFECTDOJO_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -59,16 +56,10 @@ jobs:
         with:
           name: relatorio-sast
           path: reports/semgrep.json
-      - name: Enviar ao DefectDojo (opcional)
-        if: always() && env.DD_URL != ''
-        run: bash script_defectdojo.sh "Semgrep JSON Report" reports/semgrep.json
 
   dast:
     needs: [build, sast]
     runs-on: ubuntu-latest
-    env:
-      DD_URL: ${{ secrets.DEFECTDOJO_URL }}
-      DD_TOKEN: ${{ secrets.DEFECTDOJO_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -83,12 +74,7 @@ jobs:
         if: always()
         with:
           name: relatorio-dast
-          path: |
-            reports/zap-report.html
-            reports/zap-report.xml
-      - name: Enviar ao DefectDojo (opcional)
-        if: always() && env.DD_URL != ''
-        run: bash script_defectdojo.sh "ZAP Scan" reports/zap-report.xml
+          path: reports/zap-report.html
 
   deploy:
     needs: dast

@@ -1,41 +1,28 @@
-// Servidor estatico usado no DAST: serve a pasta dist/ com cabecalhos de seguranca.
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-const dir = path.resolve(process.argv[2] || "dist");
-const port = Number(process.argv[3] || 8080);
+const pasta = path.resolve(process.argv[2]);
+const porta = Number(process.argv[3]);
 
-const tipos = {
-  ".html": "text/html; charset=utf-8",
-  ".css": "text/css; charset=utf-8",
-  ".js": "text/javascript; charset=utf-8",
-  ".txt": "text/plain; charset=utf-8",
-};
+const tipos = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".txt": "text/plain" };
 
-const cabecalhos = {
+const seguranca = {
   "Content-Security-Policy": "default-src 'self'",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
-  "Cache-Control": "no-store",
 };
 
 http
   .createServer((req, res) => {
-    const url = decodeURIComponent(req.url.split("?")[0]);
-    const arquivo = path.join(dir, url === "/" ? "index.html" : url);
-    if (!arquivo.startsWith(dir)) {
-      res.writeHead(403, cabecalhos);
-      return res.end("Proibido");
-    }
-    fs.readFile(arquivo, (erro, dados) => {
+    const nome = req.url === "/" ? "index.html" : req.url.split("?")[0];
+    fs.readFile(path.join(pasta, nome), (erro, dados) => {
       if (erro) {
-        res.writeHead(404, cabecalhos);
+        res.writeHead(404, seguranca);
         return res.end("Nao encontrado");
       }
-      const tipo = tipos[path.extname(arquivo)] || "application/octet-stream";
-      res.writeHead(200, { ...cabecalhos, "Content-Type": tipo });
+      res.writeHead(200, { ...seguranca, "Content-Type": tipos[path.extname(nome)] });
       res.end(dados);
     });
   })
-  .listen(port, () => console.log(`Servindo ${dir} em http://localhost:${port}`));
+  .listen(porta);

@@ -18,8 +18,6 @@ Se uma etapa falha, as seguintes nao rodam.
   e roda cedo no ciclo. O DAST e teste de caixa preta, ataca a aplicacao em execucao, sem
   acesso ao codigo. Um complementa o outro.
 - Os relatorios ficam como artefatos da execucao no GitHub Actions.
-- **DefectDojo (opcional):** se os secrets `DEFECTDOJO_URL` e `DEFECTDOJO_TOKEN` existirem,
-  os relatorios sao enviados para la. Sem eles, o envio e pulado.
 
 ## Rodar local
 
