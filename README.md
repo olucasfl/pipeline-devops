@@ -11,7 +11,7 @@ lint -> test -> build -> sast -> dast -> deploy
 Se uma etapa falha, as seguintes nao rodam.
 
 - **SAST (Semgrep):** analisa o codigo-fonte em `src/`. Falha se achar vulnerabilidade
-  (regras `p/javascript` + `.semgrep/rules.yml`, que proibe `eval()` e `innerHTML =`).
+  (regras proprias em `.semgrep/rules.yml`, que proibe `eval()` e `innerHTML =`).
 - **DAST (OWASP ZAP):** sobe o site do build e ataca a aplicacao rodando. Falha se faltar
   algum cabecalho de seguranca definido em `.zap/rules.tsv` (CSP, nosniff, anti-clickjacking).
 - **SAST x DAST (Aula 09):** o SAST e teste de caixa branca, le o codigo-fonte sem executar
